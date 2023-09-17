@@ -6,8 +6,8 @@ class Polynomial{
 	T* coefficients;
 	int size;
 
-	static const float epsilon = 0.01f;
-private:
+	const float epsilon = 0.01f;
+public:
 	
 	Polynomial(const int max_coefficient);
 	Polynomial(const T& other);
@@ -20,12 +20,13 @@ private:
 
 	T operator[](const int degree) const;
 	T& operator[](const int degree);
-	T& operator+(const Polynomial& second);
-	T& operator-(const Polynomial& second);
+	T& operator+(const Polynomial<T>& second);
+	T& operator-(const Polynomial<T>& second);
 	T& operator*(const T& second);
 	bool operator==(const T& second) const;
 	bool operator!=(const T& second) const;
 
 };
 
-std::ostream& operator<<(std::ostream stream&, const Polynomial& polynomial);
+template<typename T>
+std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial);
