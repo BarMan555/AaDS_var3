@@ -3,14 +3,14 @@
 
 template<typename T>
 class Polynomial{
-	T* coefficients;
-	int size;
+	T* _coefficients;
+	int _size; // Max coefficient
 
-	const float epsilon = 0.01f;
+	const float EPSILON = 0.01f;
 public:
 	
 	Polynomial(const int max_coefficient);
-	Polynomial(const T& other);
+	Polynomial(const Polynomial<T>& other);
 	~Polynomial();
 
 	bool set(const T& coefficient, int degree);
@@ -30,3 +30,5 @@ public:
 
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial);
+
+#include "../src/polynomial.cpp"
