@@ -6,9 +6,10 @@ class Polynomial{
 	T* _coefficients;
 	int _size; // Max coefficient
 
-	const float EPSILON = 0.01f;
+	static constexpr float EPSILON = 0.01f;
 public:
 	
+	Polynomial();
 	Polynomial(const int max_coefficient);
 	Polynomial(const Polynomial<T>& other);
 	~Polynomial();
@@ -21,11 +22,15 @@ public:
 
 	T operator[](const int degree) const;
 	T& operator[](const int degree);
-	T& operator+(const Polynomial<T>& second);
-	T& operator-(const Polynomial<T>& second);
-	T& operator*(const T& second);
-	bool operator==(const T& second) const;
-	bool operator!=(const T& second) const;
+	Polynomial<T>& operator+(const Polynomial<T>& second);
+	Polynomial<T>& operator-(const Polynomial<T>& second);
+	bool operator==(const Polynomial<T>& second) const;
+	bool operator!=(const Polynomial<T>& second) const;
+
+	template<typename U>
+	friend Polynomial<U>& operator*(const double scalar,Polynomial<U>& polynomial);
+	template<typename U>
+	friend Polynomial<U>& operator*(Polynomial<U>& polynomial, const double scalar);
 
 };
 
