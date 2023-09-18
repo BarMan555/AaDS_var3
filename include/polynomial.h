@@ -17,6 +17,7 @@ public:
 	T calculate(const T value) const;
 	bool shrink_to_fit();
 	bool expand(const int degree);
+	int get_size() const;
 
 	T operator[](const int degree) const;
 	T& operator[](const int degree);
