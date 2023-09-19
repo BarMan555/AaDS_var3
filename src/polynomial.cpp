@@ -1,8 +1,9 @@
 #ifndef VEC_CPP
 #define VEC_CPP
-#include <polynomial.h>
-#include <stdexcept>
-#include <cmath>
+#include<cmath>
+#include<complex>
+#include<stdexcept>
+#include<polynomial.h>
 
 template<typename T>
 Polynomial<T>::Polynomial() :Polynomial(0){}
@@ -45,10 +46,11 @@ T Polynomial<T>::calculate(const T value) const{
 template<typename T>
 bool Polynomial<T>::shrink_to_fit() {
 	int count = 0;
+	T zero = { 0 };
 	for (int i = _size; i > 0; --i) {
-		if (_coefficients[i] == 0) ++count;
+		if (_coefficients[i] == zero) ++count;
 		else break;
-	}
+	} 
 
 	if (count == 0) return false; // Ничего не укорачивали 
 	
@@ -105,7 +107,7 @@ bool Polynomial<T>::operator==(const Polynomial<T>& second) const {
 	if (this_copy._size != second_copy._size) return false;
 
 	for (int i = 0; i <= this_copy._size; ++i) {
-		if (fabs(this_copy._coefficients[i] - second_copy._coefficients[i]) >= EPSILON) return false;
+		if (abs(this_copy._coefficients[i] - second_copy._coefficients[i]) >= EPSILON) return false;
 	}
 	return true;
 }
@@ -116,7 +118,7 @@ bool Polynomial<T>::operator!=(const Polynomial<T>& second) const {
 }
 
 template<typename T>
-Polynomial<T>& Polynomial<T>::operator+(const Polynomial<T>& second) {
+Polynomial<T>& Polynomial<T>::operator+=(const Polynomial<T>& second) {
 	if (this->_size < second._size) this->expand(second._size);
 
 	for (int i = 0; i <= second._size; ++i) {
@@ -127,7 +129,13 @@ Polynomial<T>& Polynomial<T>::operator+(const Polynomial<T>& second) {
 }
 
 template<typename T>
-Polynomial<T>& Polynomial<T>::operator-(const Polynomial<T>& second) {
+Polynomial<T>& Polynomial<T>::operator+(const Polynomial<T>& second) const{
+	Polynomial<T>* result = new Polynomial<T>(*this);
+	return (*result += second);
+}
+
+template<typename T>
+Polynomial<T>& Polynomial<T>::operator-=(const Polynomial<T>& second) {
 	if (this->_size < second._size) this->expand(second._size);
 
 	for (int i = 0; i <= second._size; ++i) {
@@ -135,6 +143,12 @@ Polynomial<T>& Polynomial<T>::operator-(const Polynomial<T>& second) {
 	}
 
 	return *this;
+}
+
+template<typename T>
+Polynomial<T>& Polynomial<T>::operator-(const Polynomial<T>& second) const{
+	Polynomial<T>* result = new Polynomial<T>(*this);
+	return (*result -= second);
 }
 
 template<typename T>
@@ -153,7 +167,7 @@ std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial) 
 			continue;
 		}
 
-		if ((polynomial[i] > 0 ? 1 : 0) && (polynomial[i-1] != 0)) stream << "+";
+		if (polynomial[i] > 0 ? 1 : 0) stream << "+";
 		stream << polynomial[i] << "x";
 		if (i != 1) stream << "^" << i;
 	}
@@ -161,24 +175,34 @@ std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial) 
 	return  stream;
 }
 
-template<typename U>
-Polynomial<U>& operator*(const double scalar,Polynomial<U>& polynomial) {
+template<>
+std::ostream& operator<< <std::complex<double>> (std::ostream& stream, const Polynomial<std::complex<double>>& polynomial) {
+	int size = polynomial.get_size();
 
-	for (int i = 0; i <= polynomial._size; ++i) {
-		polynomial._coefficients[i] *= (U)scalar;
-	}
-	
-	return polynomial;
-}
-
-template<typename U>
-Polynomial<U>& operator*(Polynomial<U>& polynomial, const double scalar) {
-
-	for (int i = 0; i <= polynomial._size; ++i) {
-		polynomial._coefficients[i] *= (U)scalar;
+	if (polynomial == 0) { // Компиялтор вызывает конструктор вида Polynomial(0). Polynomial(0) = 0 при сравнении 
+		stream << "0";
+		return stream;
 	}
 
-	return polynomial;
+	for (int i = 0; i <= size; ++i) {
+		if (polynomial[i] == static_cast<std::complex<double>>(0)) continue;
+		if (i == 0) {
+			stream << "(" << polynomial[i].real();
+			if (polynomial[i].imag() > 0) stream << "+";
+			stream << polynomial[i].imag() << "i" << ")";
+			continue;
+		}
+
+		stream << "+";
+
+		stream << "(" << polynomial[i].real();
+		if (polynomial[i].imag() >= 0) stream << "+";
+		stream << polynomial[i].imag() << "i)*X";
+
+		if (i != 1) stream << "^" << i;
+	}
+
+	return  stream;
 }
 
 #endif

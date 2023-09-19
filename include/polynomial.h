@@ -22,19 +22,37 @@ public:
 
 	T operator[](const int degree) const;
 	T& operator[](const int degree);
-	Polynomial<T>& operator+(const Polynomial<T>& second);
-	Polynomial<T>& operator-(const Polynomial<T>& second);
+	Polynomial<T>& operator+=(const Polynomial<T>& second);
+	Polynomial<T>& operator-=(const Polynomial<T>& second);
+	Polynomial<T>& operator+(const Polynomial<T>& second) const;
+	Polynomial<T>& operator-(const Polynomial<T>& second) const;
 	bool operator==(const Polynomial<T>& second) const;
 	bool operator!=(const Polynomial<T>& second) const;
 
-	template<typename U>
-	friend Polynomial<U>& operator*(const double scalar,Polynomial<U>& polynomial);
-	template<typename U>
-	friend Polynomial<U>& operator*(Polynomial<U>& polynomial, const double scalar);
-
+	template<typename T>
+	friend Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial);
+	template<typename T>
+	friend Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar);
 };
 
 template<typename T>
 std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial);
+
+template<typename T>
+Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial){
+
+	Polynomial<T>* result = new Polynomial<T>(polynomial);
+
+	for (int i = 0; i <= polynomial._size; ++i) {
+		(*result)._coefficients[i] *= (T)scalar;
+	}
+
+	return *result;
+}
+
+template<typename T>
+Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar){
+	return scalar*polynomial;
+}
 
 #include "../src/polynomial.cpp"
