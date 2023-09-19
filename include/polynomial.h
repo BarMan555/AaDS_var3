@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include<complex>
 
 template<typename T>
 class Polynomial{
@@ -53,6 +54,31 @@ Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial){
 template<typename T>
 Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar){
 	return scalar*polynomial;
+}
+
+template<typename T>
+static std::ostream& print(std::ostream& stream, const T& coefficient, const int count){
+	if (coefficient == 0) return stream;
+
+	stream.setf(std::ios::showpos);
+	stream << coefficient;
+	stream.unsetf(std::ios::showpos);
+	if(count != 0) stream << "*X";
+	if (count != 1 && count != 0) stream << "^" << count;
+	return stream;
+}
+
+template<typename T>
+static std::ostream& print(std::ostream& stream, const std::complex<T>& coefficient, const int count) {
+	if (coefficient.real() == 0 && coefficient.imag() == 0) return stream;
+
+	stream << "+(" << coefficient.real();
+	stream.setf(std::ios::showpos);
+	stream << coefficient.imag() << "i)";
+	stream.unsetf(std::ios::showpos);
+	if (count != 0) stream << "*X";
+	if (count != 1 && count != 0) stream << "^" << count;
+	return stream;
 }
 
 #include "../src/polynomial.cpp"

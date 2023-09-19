@@ -155,54 +155,11 @@ template<typename T>
 std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial) {
 	int size = polynomial.get_size();
 
-	if (polynomial == 0) { // Компиялтор вызывает конструктор вида Polynomial(0). Polynomial(0) = 0 при сравнении 
-		stream << "0";
-		return stream;
-	}
-
-	for (int i = 0; i <= size; ++i){
-		if (polynomial[i] == 0) continue;
-		if (i == 0) {
-			stream << polynomial[i];
-			continue;
-		}
-
-		if (polynomial[i] > 0 ? 1 : 0) stream << "+";
-		stream << polynomial[i] << "x";
-		if (i != 1) stream << "^" << i;
-	}
-
-	return  stream;
-}
-
-template<>
-std::ostream& operator<< <std::complex<double>> (std::ostream& stream, const Polynomial<std::complex<double>>& polynomial) {
-	int size = polynomial.get_size();
-
-	if (polynomial == 0) { // Компиялтор вызывает конструктор вида Polynomial(0). Polynomial(0) = 0 при сравнении 
-		stream << "0";
-		return stream;
-	}
-
 	for (int i = 0; i <= size; ++i) {
-		if (polynomial[i] == static_cast<std::complex<double>>(0)) continue;
-		if (i == 0) {
-			stream << "(" << polynomial[i].real();
-			if (polynomial[i].imag() > 0) stream << "+";
-			stream << polynomial[i].imag() << "i" << ")";
-			continue;
-		}
-
-		stream << "+";
-
-		stream << "(" << polynomial[i].real();
-		if (polynomial[i].imag() >= 0) stream << "+";
-		stream << polynomial[i].imag() << "i)*X";
-
-		if (i != 1) stream << "^" << i;
+		print(stream, polynomial[i], i);
 	}
 
-	return  stream;
+	return stream;
 }
 
 #endif
