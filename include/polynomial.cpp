@@ -1,27 +1,96 @@
-#ifndef VEC_CPP
-#define VEC_CPP
-#include<cmath>
+#pragma once
 #include<complex>
+#include<cmath>
+#include<iostream>
 #include<stdexcept>
-#include<polynomial.h>
 
 template<typename T>
-Polynomial<T>::Polynomial() :Polynomial(0){}
+class Polynomial{
+	T* _coefficients;
+	int _degree; // Max degree
+
+	static constexpr float EPSILON = 0.01f;
+public:
+	
+	Polynomial();
+	Polynomial(const int max_coefficient);
+	Polynomial(const Polynomial<T>& other);
+	~Polynomial();
+
+	bool set(const T& coefficient, int degree);
+	T calculate(const T value) const;
+	bool shrink_to_fit();
+	bool expand(const int degree);
+	int get_degree() const;
+
+	T operator[](const int degree) const;
+	T& operator[](const int degree);
+	Polynomial<T>& operator+=(const Polynomial<T>& second);
+	Polynomial<T>& operator-=(const Polynomial<T>& second);
+	Polynomial<T>& operator+(const Polynomial<T>& second) const;
+	Polynomial<T>& operator-(const Polynomial<T>& second) const;
+	bool operator==(const Polynomial<T>& second) const;
+	bool operator!=(const Polynomial<T>& second) const;
+
+	template<typename T>
+	friend Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial);
+	template<typename T>
+	friend Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar);
+};
 
 template<typename T>
-Polynomial<T>::Polynomial(const int max_degree): _degree(max_degree) {
-	_coefficients = new T[_degree + 1]{0};
+std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial);
+
+template<typename T>
+Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial){
+
+	Polynomial<T>* result = new Polynomial<T>(polynomial);
+
+	for (int i = 0; i <= polynomial._degree; ++i) {
+		(*result)._coefficients[i] *= (T)scalar;
+	}
+
+	return *result;
 }
 
 template<typename T>
-Polynomial<T>::Polynomial(const Polynomial<T>& other) : Polynomial<T>(other._degree){
+Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar){
+	return scalar*polynomial;
+}
+
+template<typename T>
+std::ostream& print(std::ostream& stream, const T& coefficient, const int count);
+
+template<typename T>
+std::ostream& print(std::ostream& stream, const std::complex<T>& coefficient, const int count);
+
+template<typename T>
+double* find_solutions(const Polynomial<T>& polynomial);
+
+template<typename T>
+std::complex<double>* find_solutions(const Polynomial<std::complex<T>>& polynomial);
+
+// -- -- -- -- -- -- -- //
+// -- INITIALISATION -- //
+// -- -- -- -- -- -- -- //
+
+template<typename T>
+Polynomial<T>::Polynomial() :Polynomial(0) {}
+
+template<typename T>
+Polynomial<T>::Polynomial(const int max_degree) : _degree(max_degree) {
+	_coefficients = new T[_degree + 1]{ 0 };
+}
+
+template<typename T>
+Polynomial<T>::Polynomial(const Polynomial<T>& other) : Polynomial<T>(other._degree) {
 	for (int i = 0; i <= _degree; ++i) {
 		this->_coefficients[i] = other._coefficients[i];
 	}
 }
 
 template<typename T>
-Polynomial<T>::~Polynomial(){
+Polynomial<T>::~Polynomial() {
 	delete[] _coefficients;
 }
 
@@ -35,7 +104,7 @@ bool Polynomial<T>::set(const T& coefficient, int degree) {
 }
 
 template<typename T>
-T Polynomial<T>::calculate(const T value) const{
+T Polynomial<T>::calculate(const T value) const {
 	T result = 0;
 	for (int i = 0; i <= _degree; ++i) {
 		result += _coefficients[i] * pow(value, i);
@@ -50,10 +119,10 @@ bool Polynomial<T>::shrink_to_fit() {
 	for (int i = _degree; i > 0; --i) {
 		if (_coefficients[i] == zero) ++count;
 		else break;
-	} 
+	}
 
 	if (count == 0) return false; // Ничего не укорачивали 
-	
+
 	T* new_coefficients = new T[_degree - count + 1]{ 0 };
 	_degree -= count;
 	for (int i = 0; i <= _degree; ++i) {
@@ -68,7 +137,7 @@ bool Polynomial<T>::shrink_to_fit() {
 template<typename T>
 bool Polynomial<T>::expand(const int degree) {
 	if (degree <= _degree) return false;
-	T* new_coefficients = new T[degree + 1]{0};
+	T* new_coefficients = new T[degree + 1]{ 0 };
 	for (int i = 0; i <= _degree; ++i) {
 		new_coefficients[i] = _coefficients[i];
 	}
@@ -85,7 +154,7 @@ int Polynomial<T>::get_degree() const {
 }
 
 template<typename T>
-T Polynomial<T>::operator[](const int degree) const{
+T Polynomial<T>::operator[](const int degree) const {
 	if (degree < 0 || degree > _degree) throw std::runtime_error("degree is not valide");
 	return _coefficients[degree];
 }
@@ -114,7 +183,7 @@ bool Polynomial<T>::operator==(const Polynomial<T>& second) const {
 
 template<typename T>
 bool Polynomial<T>::operator!=(const Polynomial<T>& second) const {
-	return !(*this == second); 
+	return !(*this == second);
 }
 
 template<typename T>
@@ -129,7 +198,7 @@ Polynomial<T>& Polynomial<T>::operator+=(const Polynomial<T>& second) {
 }
 
 template<typename T>
-Polynomial<T>& Polynomial<T>::operator+(const Polynomial<T>& second) const{
+Polynomial<T>& Polynomial<T>::operator+(const Polynomial<T>& second) const {
 	Polynomial<T>* result = new Polynomial<T>(*this);
 	return (*result += second);
 }
@@ -146,7 +215,7 @@ Polynomial<T>& Polynomial<T>::operator-=(const Polynomial<T>& second) {
 }
 
 template<typename T>
-Polynomial<T>& Polynomial<T>::operator-(const Polynomial<T>& second) const{
+Polynomial<T>& Polynomial<T>::operator-(const Polynomial<T>& second) const {
 	Polynomial<T>* result = new Polynomial<T>(*this);
 	return (*result -= second);
 }
@@ -201,7 +270,7 @@ double* find_solutions(const Polynomial<T>& polynomial) {
 		if (copy[0] != T(0)) return (results = new double(-((copy[0]) / (copy[1]))));
 		else return (results = new double(0));
 	}
-	
+
 	if (copy.get_degree() == 2) {
 		double discriminant = ((copy[1] * copy[1]) - (4.0 * copy[0] * copy[2]));
 
@@ -249,5 +318,3 @@ std::complex<double>* find_solutions(const Polynomial<std::complex<T>>& polynomi
 
 	return results;
 }
-
-#endif
