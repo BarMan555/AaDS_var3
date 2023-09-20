@@ -57,28 +57,14 @@ Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar){
 }
 
 template<typename T>
-static std::ostream& print(std::ostream& stream, const T& coefficient, const int count){
-	if (coefficient == 0) return stream;
-
-	stream.setf(std::ios::showpos);
-	stream << coefficient;
-	stream.unsetf(std::ios::showpos);
-	if(count != 0) stream << "*X";
-	if (count != 1 && count != 0) stream << "^" << count;
-	return stream;
-}
+std::ostream& print(std::ostream& stream, const T& coefficient, const int count);
 
 template<typename T>
-static std::ostream& print(std::ostream& stream, const std::complex<T>& coefficient, const int count) {
-	if (coefficient.real() == 0 && coefficient.imag() == 0) return stream;
+std::ostream& print(std::ostream& stream, const std::complex<T>& coefficient, const int count);
 
-	stream << "+(" << coefficient.real();
-	stream.setf(std::ios::showpos);
-	stream << coefficient.imag() << "i)";
-	stream.unsetf(std::ios::showpos);
-	if (count != 0) stream << "*X";
-	if (count != 1 && count != 0) stream << "^" << count;
-	return stream;
-}
+template<typename T>
+double* search(const Polynomial<T>& polynomial);
 
+template<typename T>
+std::complex<double>* search(const Polynomial<std::complex<T>>& polynomial);
 #include "../src/polynomial.cpp"

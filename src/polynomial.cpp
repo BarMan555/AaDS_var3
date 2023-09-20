@@ -162,4 +162,92 @@ std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial) 
 	return stream;
 }
 
+template<typename T>
+std::ostream& print(std::ostream& stream, const T& coefficient, const int count) {
+	if (coefficient == 0) return stream;
+
+	stream.setf(std::ios::showpos);
+	stream << coefficient;
+	stream.unsetf(std::ios::showpos);
+	if (count != 0) stream << "*X";
+	if (count != 1 && count != 0) stream << "^" << count;
+	return stream;
+}
+
+template<typename T>
+std::ostream& print(std::ostream& stream, const std::complex<T>& coefficient, const int count) {
+	if (coefficient.real() == 0 && coefficient.imag() == 0) return stream;
+
+	stream << "+(" << coefficient.real();
+	stream.setf(std::ios::showpos);
+	stream << coefficient.imag() << "i)";
+	stream.unsetf(std::ios::showpos);
+	if (count != 0) stream << "*X";
+	if (count != 1 && count != 0) stream << "^" << count;
+	return stream;
+}
+
+template<typename T>
+double* search(const Polynomial<T>& polynomial) {
+	double* results;
+
+	Polynomial<double> copy(polynomial.get_size());
+	for (int i = 0; i <= copy.get_size(); ++i) copy[i] = double(polynomial[i]);
+	copy.shrink_to_fit();
+
+	if (copy.get_size() != 1 && copy.get_size() != 2) throw std::runtime_error("degree must be 1 or 2");
+
+	if (copy.get_size() == 1) {
+		if (copy[0] != T(0)) return (results = new double(-((copy[0]) / (copy[1]))));
+		else return (results = new double(0));
+	}
+	
+	if (copy.get_size() == 2) {
+		double discriminant = ((copy[1] * copy[1]) - (4.0 * copy[0] * copy[2]));
+
+		if (discriminant < 0) throw std::runtime_error("no solutions");
+		if (discriminant == 0) {
+			results = new double(-((copy[1]) / (2.0 * copy[2])));
+		}
+		if (discriminant > 0) {
+			results = new double[2];
+			results[0] = (((-copy[1] + sqrt(discriminant)) / (2.0 * copy[2])));
+			results[1] = (((-copy[1] - sqrt(discriminant)) / (2.0 * copy[2])));
+		}
+	}
+
+	return results;
+}
+
+template<typename T>
+std::complex<double>* search(const Polynomial<std::complex<T>>& polynomial) {
+	std::complex<double>* results;
+
+	Polynomial<std::complex<double>> copy(polynomial.get_size());
+	for (int i = 0; i <= copy.get_size(); ++i) copy[i] = std::complex<double>(polynomial[i]);
+	copy.shrink_to_fit();
+
+	if (copy.get_size() != 1 && copy.get_size() != 2) throw std::runtime_error("degree must be 1 or 2");
+
+	if (copy.get_size() == 1) {
+		if (copy[0] != std::complex<double>(0)) return (results = new std::complex<double>(-((copy[0]) / (copy[1]))));
+		else return (results = new std::complex<double>(0));
+	}
+
+	if (copy.get_size() == 2) {
+		std::complex<double> discriminant = ((copy[1] * copy[1]) - (4.0 * copy[0] * copy[2]));
+
+		if (discriminant == std::complex <double>(0)) {
+			results = new std::complex<double>(-((copy[1]) / (2.0 * copy[2])));
+		}
+		else {
+			results = new std::complex<double>[2];
+			results[0] = (((-copy[1] + sqrt(discriminant)) / (2.0 * copy[2])));
+			results[1] = (((-copy[1] - sqrt(discriminant)) / (2.0 * copy[2])));
+		}
+	}
+
+	return results;
+}
+
 #endif
