@@ -189,7 +189,7 @@ std::ostream& print(std::ostream& stream, const std::complex<T>& coefficient, co
 
 template<typename T>
 double* find_solutions(const Polynomial<T>& polynomial) {
-	double* results;
+	double* results = nullptr;
 
 	Polynomial<double> copy(polynomial.get_degree());
 	for (int i = 0; i <= copy.get_degree(); ++i) copy[i] = double(polynomial[i]);
@@ -221,7 +221,7 @@ double* find_solutions(const Polynomial<T>& polynomial) {
 
 template<typename T>
 std::complex<double>* find_solutions(const Polynomial<std::complex<T>>& polynomial) {
-	std::complex<double>* results;
+	std::complex<double>* results = nullptr;
 
 	Polynomial<std::complex<double>> copy(polynomial.get_degree());
 	for (int i = 0; i <= copy.get_degree(); ++i) copy[i] = std::complex<double>(polynomial[i]);
