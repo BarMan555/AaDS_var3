@@ -18,7 +18,7 @@ if(MSVC)
 endif()
 
 # Объявляем библиотеку
-add_library(polynomial_lib SHARED "include/polynomial.h" "src/polynomial.cpp")
+add_library(polynomial_lib SHARED "include/polynomial.cpp")
 target_include_directories(polynomial_lib PUBLIC "include")
 
 # Объявляем консольное приложение
