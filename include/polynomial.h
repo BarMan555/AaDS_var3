@@ -5,7 +5,7 @@
 template<typename T>
 class Polynomial{
 	T* _coefficients;
-	int _size; // Max coefficient
+	int _degree; // Max coefficient
 
 	static constexpr float EPSILON = 0.01f;
 public:
@@ -19,7 +19,7 @@ public:
 	T calculate(const T value) const;
 	bool shrink_to_fit();
 	bool expand(const int degree);
-	int get_size() const;
+	int get_degree() const;
 
 	T operator[](const int degree) const;
 	T& operator[](const int degree);
@@ -44,7 +44,7 @@ Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial){
 
 	Polynomial<T>* result = new Polynomial<T>(polynomial);
 
-	for (int i = 0; i <= polynomial._size; ++i) {
+	for (int i = 0; i <= polynomial._degree; ++i) {
 		(*result)._coefficients[i] *= (T)scalar;
 	}
 
@@ -63,8 +63,8 @@ template<typename T>
 std::ostream& print(std::ostream& stream, const std::complex<T>& coefficient, const int count);
 
 template<typename T>
-double* search(const Polynomial<T>& polynomial);
+double* find_solutions(const Polynomial<T>& polynomial);
 
 template<typename T>
-std::complex<double>* search(const Polynomial<std::complex<T>>& polynomial);
+std::complex<double>* find_solutions(const Polynomial<std::complex<T>>& polynomial);
 #include "../src/polynomial.cpp"
