@@ -14,6 +14,7 @@ public:
 	
 	Polynomial();
 	Polynomial(const int max_coefficient);
+	Polynomial(const T& vector_coefficients, const int size);
 	Polynomial(const Polynomial<T>& other);
 	~Polynomial();
 
@@ -42,21 +43,10 @@ template<typename T>
 std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial);
 
 template<typename T>
-Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial){
-
-	Polynomial<T>* result = new Polynomial<T>(polynomial);
-
-	for (int i = 0; i <= polynomial._degree; ++i) {
-		(*result)._coefficients[i] *= (T)scalar;
-	}
-
-	return *result;
-}
+Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial);
 
 template<typename T>
-Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar){
-	return scalar*polynomial;
-}
+Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar);
 
 template<typename T>
 std::ostream& print(std::ostream& stream, const T& coefficient, const int count);
@@ -80,6 +70,14 @@ Polynomial<T>::Polynomial() :Polynomial(0) {}
 template<typename T>
 Polynomial<T>::Polynomial(const int max_degree) : _degree(max_degree) {
 	_coefficients = new T[_degree + 1]{ 0 };
+}
+
+template<typename T>
+Polynomial<T>::Polynomial(const T& vector_coefficients, const int size) : Polynomial(size-1)
+{
+	for (int i = 0; i <= _degree; ++i) {
+		_coefficients[i] = vector_coefficients[i];
+	}
 }
 
 template<typename T>
@@ -229,6 +227,23 @@ std::ostream& operator<<(std::ostream& stream, const Polynomial<T>& polynomial) 
 	}
 
 	return stream;
+}
+
+template<typename T>
+Polynomial<T>& operator*(const double scalar, Polynomial<T>& polynomial) {
+
+	Polynomial<T>* result = new Polynomial<T>(polynomial);
+
+	for (int i = 0; i <= polynomial._degree; ++i) {
+		(*result)._coefficients[i] *= (T)scalar;
+	}
+
+	return *result;
+}
+
+template<typename T>
+Polynomial<T>& operator*(Polynomial<T>& polynomial, const double scalar) {
+	return scalar * polynomial;
 }
 
 template<typename T>
